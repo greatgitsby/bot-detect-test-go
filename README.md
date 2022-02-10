@@ -16,7 +16,7 @@ go run main.go /path/to/cert.pem /path/to/key.pem
 
 
 ## Thanks + Licenses
-* Original modifications found in [CapacitorSet's ja3-server](https://github.com/greatgitsby/bot-filter)
+* Original modifications found in [CapacitorSet's ja3-server](https://github.com/CapacitorSet/ja3-server)
 * Original algorithm: [Salesforce](https://github.com/salesforce/ja3)
 * Golang implementation: [Remco Verhoef](https://github.com/honeytrap/honeytrap/commit/192795147948103a24d34dc06dba74eecdeb086b), copyright DutchSec, AGPL 3.
 * Golang stdlib (`crypto/tls`, `net/http`): copyright the Go authors, BSD.
