@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -26,35 +25,41 @@ func NewProtector(handlerToWrap http.Handler) *Protector {
 	return &Protector{handlerToWrap}
 }
 
-func (p *Protector) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	hash := md5.Sum([]byte(r.JA3Fingerprint))
+func GetServerSideCollectorEntry(r *http.Request) *ServerSideCollectorEntry {
 
+	// Get JA3 fingerprint string
+	hash := md5.Sum([]byte(r.JA3Fingerprint))
 	out := make([]byte, 32)
 	hex.Encode(out, hash[:])
 
-	server_side_entry := ServerSideCollectorEntry{
+	// Build entry
+	// TODO brainstorm data I would like to be included here
+	return &ServerSideCollectorEntry{
 		JA3:        string(out),
 		UA:         r.Header.Get("User-Agent"),
 		RemoteAddr: r.RemoteAddr,
 	}
+}
 
-	server_side_entry_str, _ := json.Marshal(server_side_entry)
+func (p *Protector) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println(string(server_side_entry_str))
-
-	if true {
-		http.Error(w, "{\"status\": \"blocked\"}", http.StatusForbidden)
-		return
-	}
+	// TODO use entry
+	// entry := GetServerSideCollectorEntry(r)
 
 	p.handler.ServeHTTP(w, r)
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%s\n", "Hi")
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "%s\n", "{\"hello\": \"world\"}")
 }
 
 func main() {
+
+	// TODO Parameterize
+	listen_on := ":8443"
+
+	// Ensure keys are provided
 	if len(os.Args) != 3 {
 		fmt.Printf("Syntax: %s path/to/certificate.pem path/to/key.pem\n", os.Args[0])
 		return
@@ -62,13 +67,15 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// Route handlers
 	mux.HandleFunc("/hello", hello)
 
+	// Wrap routes in the protector handler (middleware)
 	protectedMux := NewProtector(mux)
 
-	server := &http.Server{Addr: ":8443", Handler: protectedMux}
-
-	ln, err := net.Listen("tcp", ":8443")
+	// Create http server and listener on port
+	server := &http.Server{Addr: listen_on, Handler: protectedMux}
+	ln, err := net.Listen("tcp", listen_on)
 	if err != nil {
 		panic(err)
 	}
@@ -78,8 +85,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	tlsConfig := tls.Config{Certificates: []tls.Certificate{cert}}
 
+	tlsConfig := tls.Config{Certificates: []tls.Certificate{cert}}
 	tlsListener := tls.NewListener(ln, &tlsConfig)
 
 	fmt.Println("Listening")
