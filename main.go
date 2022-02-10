@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 
 	"github.com/greatgitsby/bot-filter/crypto/tls"
 	"github.com/greatgitsby/bot-filter/net/http"
 )
 
 type ServerSideCollectorEntry struct {
-	JA3        string `json:"ja3"`
+	JA3_Hash   string `json:"ja3_hash"`
+	JA3_Raw    string `json:"ja3_raw"`
 	UA         string `json:"user_agent"`
 	RemoteAddr string `json:"remote_addr"`
 }
@@ -35,7 +37,8 @@ func GetServerSideCollectorEntry(r *http.Request) *ServerSideCollectorEntry {
 	// Build entry
 	// TODO brainstorm data I would like to be included here
 	return &ServerSideCollectorEntry{
-		JA3:        string(out),
+		JA3_Hash:   string(out),
+		JA3_Raw:    r.JA3Fingerprint,
 		UA:         r.Header.Get("User-Agent"),
 		RemoteAddr: r.RemoteAddr,
 	}
@@ -43,8 +46,16 @@ func GetServerSideCollectorEntry(r *http.Request) *ServerSideCollectorEntry {
 
 func (p *Protector) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	// TODO use entry
-	// entry := GetServerSideCollectorEntry(r)
+	entry := GetServerSideCollectorEntry(r)
+
+	fmt.Printf(
+		"[%s] %s - %s - %s @ %s\n",
+		time.Now().Local().Format(time.RFC3339Nano),
+		entry.RemoteAddr,
+		entry.JA3_Hash,
+		r.Method,
+		r.URL.Path,
+	)
 
 	p.handler.ServeHTTP(w, r)
 }
