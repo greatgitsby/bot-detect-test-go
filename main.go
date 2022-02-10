@@ -7,8 +7,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/CapacitorSet/ja3-server/crypto/tls"
-	"github.com/CapacitorSet/ja3-server/net/http"
+	"github.com/greatgitsby/bot-filter/crypto/tls"
+	"github.com/greatgitsby/bot-filter/net/http"
 )
 
 type ServerSideCollectorEntry struct {

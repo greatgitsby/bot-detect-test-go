@@ -12,7 +12,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http/httptrace"
-	"github.com/CapacitorSet/ja3-server/net/http/internal"
+	"github.com/greatgitsby/bot-filter/net/http/internal"
 	"net/textproto"
 	"reflect"
 	"sort"

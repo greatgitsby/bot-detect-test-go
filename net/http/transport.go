@@ -14,7 +14,7 @@ import (
 	"compress/gzip"
 	"container/list"
 	"context"
-	"github.com/CapacitorSet/ja3-server/crypto/tls"
+	"github.com/greatgitsby/bot-filter/crypto/tls"
 	"errors"
 	"fmt"
 	"io"

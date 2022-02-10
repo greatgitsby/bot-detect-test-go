@@ -9,7 +9,7 @@ package http
 import (
 	"bufio"
 	"bytes"
-	"github.com/CapacitorSet/ja3-server/crypto/tls"
+	"github.com/greatgitsby/bot-filter/crypto/tls"
 	"errors"
 	"fmt"
 	"io"

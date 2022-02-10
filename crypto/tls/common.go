@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/CapacitorSet/ja3-server/crypto/internal/cipherhw"
+	"github.com/greatgitsby/bot-filter/crypto/internal/cipherhw"
 )
 
 const (
